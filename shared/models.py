@@ -35,6 +35,9 @@ class WebsiteStats(Base):
 
 class YoutubeUsers(Base):
     __tablename__ = 'youtube_users'
+    __table_args__ = (
+        Index('ux_username', 'username', unique=True),
+    )
 
     user_id: Mapped[str] = mapped_column(String(36), primary_key=True)
     username: Mapped[str] = mapped_column(String(255))
@@ -66,10 +69,12 @@ class YoutubeSuperThanks(Base):
         ForeignKeyConstraint(['user_id'], ['youtube_users.user_id'], ondelete='CASCADE', name='youtube_super_thanks_ibfk_1'),
         Index('rate_id', 'rate_id'),
         Index('user_id', 'user_id'),
+        Index('ux_cid', 'cid', unique=True),
         Index('video_id', 'video_id')
     )
 
     thanks_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    cid: Mapped[str] = mapped_column(String(36))
     user_id: Mapped[str] = mapped_column(String(36))
     video_id: Mapped[str] = mapped_column(String(36))
     amount: Mapped[decimal.Decimal] = mapped_column(DECIMAL(10, 2))
