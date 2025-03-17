@@ -1,0 +1,16 @@
+
+shared/__pycache__/
+
+backend/app/__pycache__/
+
+backend/app/cache/__pycache__/
+
+backend/app/crud/__pycache__/
+
+backend/app/middleware/__pycache__/
+
+backend/app/router/__pycache__/
+
+logs/
+
+scraper/__pycache__/
