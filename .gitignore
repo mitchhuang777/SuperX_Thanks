@@ -14,3 +14,7 @@ backend/app/router/__pycache__/
 logs/
 
 scraper/__pycache__/
+
+frontend/super-thanks/.env
+
+shared/.env.dev
