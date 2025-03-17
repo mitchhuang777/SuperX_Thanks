@@ -1,0 +1,33 @@
+.container {
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.total {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.api-info {
+  font-size: 14px;
+  color: gray;
+}
+
+table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: #f4f4f4;
+}
