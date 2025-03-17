@@ -18,3 +18,5 @@ scraper/__pycache__/
 frontend/super-thanks/.env
 
 shared/.env.dev
+
+scripts/__pycache__/
