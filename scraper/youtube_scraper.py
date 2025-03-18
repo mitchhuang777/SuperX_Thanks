@@ -122,15 +122,16 @@ def extract_currency_and_amount(amount_text: str):
         return currency_code, amount_value
     return "", "0"
 
-
 # ✅ **主函數**
 async def main():
-    # video_url = "https://www.youtube.com/watch?v=hjcTwe5BHYI&t"
-    video_url = "https://www.youtube.com/watch?v=kOZWQgtqps4"
-    # video_url = "https://www.youtube.com/watch?v=SgNntpyDC7s"
+    video_urls = [
+        "https://www.youtube.com/watch?v=hjcTwe5BHYI",
+        "https://www.youtube.com/watch?v=kOZWQgtqps4"
+    ]
     
-    async for db in get_db():
-        await fetch_super_thanks(video_url, db)
+    async for db in get_db():  # 只建立一次 DB 連線
+        for video_url in video_urls:
+            await fetch_super_thanks(video_url, db)
 
 # ✅ **啟動爬蟲**
 if __name__ == "__main__":
