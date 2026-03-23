@@ -1,6 +1,6 @@
 import asyncio
 import time
-from scraper.crud import create_super_thanks_bulk
+from scraper.crud import create_super_thanks_bulk, update_all_exchange_rates
 from shared.database import get_db
 import re
 import decimal
@@ -23,27 +23,21 @@ exchange_rates = get_exchange_rates()
 
 # ✅ 貨幣對應表
 currency_map = {
-    "HK": "HKD", "HK$": "HKD",
-    "SG": "SGD", "SG$": "SGD",
-    "NT": "TWD", "NT$": "TWD",
-    "US": "USD", "US$": "USD",
-    "CA": "CAD", "CA$": "CAD",
-    "AU": "AUD", "AU$": "AUD",
-    "NZ": "NZD", "NZ$": "NZD",
+    "HK": "HKD", "SG": "SGD", "NT": "TWD", "US": "USD",
     "MY": "MYR", "JP": "JPY", "KR": "KRW", "CN": "CNY",
     "EU": "EUR", "ID": "IDR", "TH": "THB", "PH": "PHP",
-    "CAD": "CAD", "CHF": "CHF",
+    "AU": "AUD", "CAD": "CAD", "CHF": "CHF", "NZ": "NZD",
     "IN": "INR", "MX": "MXN", "BR": "BRL", "SEK": "SEK",
     "NOK": "NOK", "ZAR": "ZAR", "RUB": "RUB", "TRY": "TRY",
     "SAR": "SAR", "AED": "AED"
 }
 
 symbol_to_currency = {
-    "£": "GBP", "€": "EUR", "¥": "JPY", "₩": "KRW", "￦": "KRW",
+    "£": "GBP", "€": "EUR", "¥": "JPY", "₩": "KRW",
     "₹": "INR", "₽": "RUB", "₺": "TRY", "₴": "UAH",
     "₱": "PHP", "₦": "NGN", "₡": "CRC", "₪": "ILS",
     "₫": "VND", "฿": "THB", "₭": "LAK", "₲": "PYG",
-    "₵": "GHS", "$": "TWD",  # 單純 $ 視為台幣
+    "₵": "GHS"
 }
 
 # ✅ 初始化 YouTube 留言下載器
@@ -132,6 +126,9 @@ def extract_currency_and_amount(amount_text: str):
 
 # ✅ **主函數**
 async def main():
+    async for db in get_db():
+        await update_all_exchange_rates(db)
+
     video_urls = [
         "https://www.youtube.com/watch?v=hjcTwe5BHYI",
         "https://www.youtube.com/watch?v=kOZWQgtqps4"
