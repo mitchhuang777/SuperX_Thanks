@@ -3,7 +3,7 @@
 統計 **Andy 老師** 兩支 YouTube 影片的 Super Thanks（超級抖內）捐款數據的分析儀表板。
 
 **追蹤影片：**
-- [10年了！227萬訂閱眾量級CROWD「原來不是我的？！」【Andy老師】](https://www.youtube.com/watch?v=hjcTwe5BHYI)
+- [10年了！227萬訂閱眾量級CROWD「原來不是我的？！」【Andy老師】](https://www.youtube.com/watch?v=kOZWQgtqps4)
 - [直球對決張家人聲明！【Andy老師】](https://www.youtube.com/watch?v=hjcTwe5BHYI)
 
 ## 功能
