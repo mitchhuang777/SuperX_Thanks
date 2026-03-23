@@ -19,4 +19,6 @@ frontend/super-thanks/.env
 
 shared/.env.dev
 
+shared/.env.prod
+
 scripts/__pycache__/
