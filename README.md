@@ -5,6 +5,7 @@
 **追蹤影片：**
 - [10年了！227萬訂閱眾量級CROWD「原來不是我的？！」【Andy老師】](https://www.youtube.com/watch?v=kOZWQgtqps4)
 - [直球對決張家人聲明！【Andy老師】](https://www.youtube.com/watch?v=hjcTwe5BHYI)
+- [財務危機後能去哪？【鍾明軒】](https://www.youtube.com/watch?v=gyDbjv_tChE)
 
 ## 功能
 

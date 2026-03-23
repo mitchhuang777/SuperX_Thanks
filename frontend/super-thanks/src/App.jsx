@@ -19,6 +19,7 @@ export default function Dashboard() {
   const videoTitleMap = {
     "kOZWQgtqps4": "10年了！227萬訂閱眾量級CROWD「原來不是我的？！」【Andy老師】",
     "hjcTwe5BHYI": "直球對決張家人聲明！【Andy老師】",
+    "gyDbjv_tChE": "財務危機後能去哪？【鍾明軒】",
   };
 
   // const CACHE_EXPIRY = 10 * 60 * 1000; // 10 分鐘過期
