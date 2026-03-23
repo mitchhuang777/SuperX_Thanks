@@ -9,7 +9,8 @@ from shared.models import Base
 
 # 設定 .env 檔案路徑
 script_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(script_dir, "..", "shared", ".env.dev")
+ENV = os.getenv("ENV", "dev")
+env_path = os.path.join(script_dir, "..", "shared", f".env.{ENV}")
 
 load_dotenv(dotenv_path=env_path)
 
