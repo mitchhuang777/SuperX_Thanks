@@ -4,7 +4,7 @@ from sqlalchemy.sql import func
 import json
 import aioredis  # Redis 非同步套件
 from typing import List, Dict
-from shared.models import YoutubeSuperThanks, ExchangeRates, YoutubeUsers
+from shared.models import YoutubeSuperThanks, ExchangeRates, YoutubeUsers, YoutubeVideos
 from backend.app.cache.redis_client import get_redis_client  # Redis 快取
 from decimal import Decimal
 from datetime import datetime
@@ -37,7 +37,8 @@ async def get_video_super_thanks_summary(video_id: Optional[str], db: AsyncSessi
     # 1. 先查詢總筆數
     count_stmt = select(func.count()).select_from(YoutubeSuperThanks)
     if video_id:
-        count_stmt = count_stmt.where(YoutubeSuperThanks.video_id == video_id)
+        count_stmt = count_stmt.join(YoutubeVideos, YoutubeSuperThanks.video_id == YoutubeVideos.video_id)
+        count_stmt = count_stmt.where(YoutubeVideos.youtube_video_id == video_id)
 
     count_result = await db.execute(count_stmt)
     total_records = count_result.scalar()  # 獲取總筆數
@@ -59,7 +60,8 @@ async def get_video_super_thanks_summary(video_id: Optional[str], db: AsyncSessi
 
     # 如果 video_id 有值，則加上 where 條件
     if video_id:
-        stmt = stmt.where(YoutubeSuperThanks.video_id == video_id)
+        stmt = stmt.join(YoutubeVideos, YoutubeSuperThanks.video_id == YoutubeVideos.video_id)
+        stmt = stmt.where(YoutubeVideos.youtube_video_id == video_id)
 
     result = await db.execute(stmt)
     data = result.mappings().all()
@@ -114,7 +116,8 @@ async def get_currency_amounts(video_id: Optional[str], db: AsyncSession):
 
     # 如果有指定 `video_id`，則加上 where 條件
     if video_id:
-        stmt = stmt.where(YoutubeSuperThanks.video_id == video_id)
+        stmt = stmt.join(YoutubeVideos, YoutubeSuperThanks.video_id == YoutubeVideos.video_id)
+        stmt = stmt.where(YoutubeVideos.youtube_video_id == video_id)
 
     result = await db.execute(stmt)
     rows = result.mappings().all()
@@ -160,7 +163,8 @@ async def get_super_thanks_messages(
 
     # 如果 `video_id` 存在，則加上 `where` 條件
     if video_id:
-        stmt = stmt.where(YoutubeSuperThanks.video_id == video_id)
+        stmt = stmt.join(YoutubeVideos, YoutubeSuperThanks.video_id == YoutubeVideos.video_id)
+        stmt = stmt.where(YoutubeVideos.youtube_video_id == video_id)
 
     result = await db.execute(stmt)
     rows = result.mappings().all()
@@ -197,7 +201,8 @@ async def get_total_donate(video_id: str | None, db: AsyncSession):
 
     # 如果有指定 video_id，則加上篩選條件
     if video_id:
-        stmt = stmt.where(YoutubeSuperThanks.video_id == video_id)
+        stmt = stmt.join(YoutubeVideos, YoutubeSuperThanks.video_id == YoutubeVideos.video_id)
+        stmt = stmt.where(YoutubeVideos.youtube_video_id == video_id)
 
     result = await db.execute(stmt)
     total_donate_twd, total_donations = result.first()
