@@ -1,6 +1,6 @@
 # SuperX Thanks
 
-統計 **Andy 老師** 兩支 YouTube 影片的 Super Thanks（超級抖內）捐款數據的分析儀表板。
+收錄 **Threads 友**想知道的 YouTube 影片 Super Thanks（超級感謝）捐款數據的分析儀表板。
 
 **追蹤影片：**
 - [10年了！227萬訂閱眾量級CROWD「原來不是我的？！」【Andy老師】](https://www.youtube.com/watch?v=kOZWQgtqps4)
