@@ -1,18 +1,11 @@
 import asyncio
 import time
-from playwright.async_api import async_playwright
-from shared.utils import detect_new_comments, scroll_down, scroll_to_element, wait_and_click, wait_for_text_and_click
-from shared.log_manager import log_manager
 from scraper.crud import create_super_thanks_bulk
 from shared.database import get_db
 import re
 import decimal
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from youtube_comment_downloader import YoutubeCommentDownloader, SORT_BY_RECENT
 import requests
-import uuid
-from shared.models import YoutubeSuperThanks
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 # ✅ 取得即時匯率
@@ -50,12 +43,15 @@ symbol_to_currency = {
 # ✅ 初始化 YouTube 留言下載器
 downloader = YoutubeCommentDownloader()
 
-async def fetch_super_thanks(video_url: str, db: AsyncSession):
-    """ 爬取影片的 Super Thanks 留言並寫入資料庫 """
-    
-    print("\n🔄 正在爬取超級留言...")
+BATCH_SIZE = 500  # 每批寫入筆數
+LOG_INTERVAL = 100  # 每抓取幾筆印一次進度
+
+async def fetch_super_thanks(video_url: str):
+    """ 爬取影片的 Super Thanks 留言並分批寫入資料庫 """
+
+    print(f"\n🔄 正在爬取超級留言: {video_url}")
     start_time = time.perf_counter()
-    
+
     # ✅ 影片 ID
     match = re.search(r"v=([\w-]+)", video_url)
     if not match:
@@ -63,31 +59,37 @@ async def fetch_super_thanks(video_url: str, db: AsyncSession):
         return
     youtube_video_id = match.group(1)
 
-    # ✅ **獲取留言 (非同步爬取)**
     comment_generator = downloader.get_comments_from_url(video_url, sort_by=SORT_BY_RECENT)
-    comments = []
+    batch = []
+    total_saved = 0
 
     for index, comment in enumerate(comment_generator, 1):
-        elapsed_time = int(time.perf_counter() - start_time)
-        print(f"\r⏳ 已執行 {elapsed_time} 秒，已抓取 {index} 筆留言", end="", flush=True)
-        comments.append(comment)
+        batch.append(comment)
 
-    print("\n✅ 留言抓取完成，開始處理...")
+        if index % LOG_INTERVAL == 0:
+            elapsed_time = int(time.perf_counter() - start_time)
+            print(f"⏳ 已執行 {elapsed_time} 秒，已抓取 {index} 筆留言（已存入 {total_saved} 筆）", flush=True)
 
-    # ✅ **多線程解析留言**
-    processed_comments = []
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        futures = [executor.submit(process_comment, comment, youtube_video_id) for comment in comments]
-        for future in as_completed(futures):
-            result = future.result()
-            if result:
-                processed_comments.append(result)
+        if len(batch) >= BATCH_SIZE:
+            processed = [r for r in (process_comment(c, youtube_video_id) for c in batch) if r]
+            if processed:
+                async for db in get_db():
+                    await create_super_thanks_bulk(db, processed)
+                total_saved += len(processed)
+            elapsed_time = int(time.perf_counter() - start_time)
+            print(f"💾 批次寫入完成：已存入 {total_saved} 筆（{elapsed_time} 秒）", flush=True)
+            batch = []
 
-    # ✅ **將 Super Thanks 留言存入資料庫**
-    await create_super_thanks_bulk(db, processed_comments)
+    # ✅ 處理最後一批
+    if batch:
+        processed = [r for r in (process_comment(c, youtube_video_id) for c in batch) if r]
+        if processed:
+            async for db in get_db():
+                await create_super_thanks_bulk(db, processed)
+            total_saved += len(processed)
 
     elapsed_time = int(time.perf_counter() - start_time)
-    print(f"\n✅ 資料處理完成！總共用時 {elapsed_time} 秒，已存入 {len(processed_comments)} 筆留言")
+    print(f"\n✅ 完成！總共用時 {elapsed_time} 秒，已存入 {total_saved} 筆 Super Thanks")
 
 def process_comment(comment, youtube_video_id):
     """ 處理單條留言，解析捐款金額、貨幣與使用者資訊 """
@@ -128,12 +130,10 @@ async def main():
         "https://www.youtube.com/watch?v=hjcTwe5BHYI",
         "https://www.youtube.com/watch?v=kOZWQgtqps4"
     ]
-    
-    async for db in get_db():  # 只建立一次 DB 連線
-        for video_url in video_urls:
-            await fetch_super_thanks(video_url, db)
+
+    for video_url in video_urls:
+        await fetch_super_thanks(video_url)
 
 # ✅ **啟動爬蟲**
 if __name__ == "__main__":
     asyncio.run(main())
-
