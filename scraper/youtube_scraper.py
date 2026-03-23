@@ -23,21 +23,27 @@ exchange_rates = get_exchange_rates()
 
 # ✅ 貨幣對應表
 currency_map = {
-    "HK": "HKD", "SG": "SGD", "NT": "TWD", "US": "USD",
+    "HK": "HKD", "HK$": "HKD",
+    "SG": "SGD", "SG$": "SGD",
+    "NT": "TWD", "NT$": "TWD",
+    "US": "USD", "US$": "USD",
+    "CA": "CAD", "CA$": "CAD",
+    "AU": "AUD", "AU$": "AUD",
+    "NZ": "NZD", "NZ$": "NZD",
     "MY": "MYR", "JP": "JPY", "KR": "KRW", "CN": "CNY",
     "EU": "EUR", "ID": "IDR", "TH": "THB", "PH": "PHP",
-    "AU": "AUD", "CAD": "CAD", "CHF": "CHF", "NZ": "NZD",
+    "CAD": "CAD", "CHF": "CHF",
     "IN": "INR", "MX": "MXN", "BR": "BRL", "SEK": "SEK",
     "NOK": "NOK", "ZAR": "ZAR", "RUB": "RUB", "TRY": "TRY",
     "SAR": "SAR", "AED": "AED"
 }
 
 symbol_to_currency = {
-    "£": "GBP", "€": "EUR", "¥": "JPY", "₩": "KRW",
+    "£": "GBP", "€": "EUR", "¥": "JPY", "₩": "KRW", "￦": "KRW",
     "₹": "INR", "₽": "RUB", "₺": "TRY", "₴": "UAH",
     "₱": "PHP", "₦": "NGN", "₡": "CRC", "₪": "ILS",
     "₫": "VND", "฿": "THB", "₭": "LAK", "₲": "PYG",
-    "₵": "GHS"
+    "₵": "GHS", "$": "TWD",  # 單純 $ 視為台幣
 }
 
 # ✅ 初始化 YouTube 留言下載器
