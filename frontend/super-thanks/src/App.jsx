@@ -17,8 +17,8 @@ export default function Dashboard() {
   const [dailyVisitors, setDailyVisitors] = useState(0);
 
   const videoTitleMap = {
-    "2e70859e-1491-4978-a74f-be5d76d49861": "10年了！227萬訂閱眾量級CROWD「原來不是我的？！」【Andy老師】",
-    "4c5be8c6-dd78-4a2e-a34a-22c979280237": "直球對決張家人聲明！【Andy老師】",
+    "kOZWQgtqps4": "10年了！227萬訂閱眾量級CROWD「原來不是我的？！」【Andy老師】",
+    "hjcTwe5BHYI": "直球對決張家人聲明！【Andy老師】",
   };
 
   // const CACHE_EXPIRY = 10 * 60 * 1000; // 10 分鐘過期
