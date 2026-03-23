@@ -1,0 +1,63 @@
+name: Run YouTube Scraper
+
+on:
+  schedule:
+    - cron: '0 18 * * *'  # 每天台灣時間 02:00 (UTC 18:00)
+  workflow_dispatch:       # 允許手動觸發
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements-scraper.txt
+
+      - name: Check DB record count
+        id: check_db
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+        run: |
+          python - <<'EOF'
+          import asyncio
+          import os
+          from sqlalchemy.ext.asyncio import create_async_engine
+          from sqlalchemy.future import select
+          from sqlalchemy.sql import func
+          from shared.models import YoutubeSuperThanks
+
+          async def check():
+              url = f"mysql+aiomysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+              engine = create_async_engine(url)
+              async with engine.connect() as conn:
+                  result = await conn.execute(select(func.count()).select_from(YoutubeSuperThanks))
+                  count = result.scalar()
+              await engine.dispose()
+              print(f"DB 目前有 {count} 筆資料")
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write(f"count={count}\n")
+
+          asyncio.run(check())
+          EOF
+
+      - name: Run scraper
+        env:
+          ENV: prod
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+        run: python -m scraper.youtube_scraper
